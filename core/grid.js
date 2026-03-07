@@ -43,6 +43,9 @@ export function computeConnectionsGrid(nodes, cellSize, maxDist) {
 
         if (dist < maxDist) {
           edges.push({ a: n, b: other, dist });
+
+          n.neighbours.push(other);
+          other.neighbours.push(n);
         }
       });
     });

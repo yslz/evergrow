@@ -53,6 +53,8 @@ for (let i = 0; i < NODE_COUNT; i++) {
 // --- heartbeat reaction ---
 onTick((t) => {
   nodes.forEach(n => n.update(t));
+
+  nodes.forEach(n => n.neighbours = []);
   
   if (t % 10 === 0) {
     edges = computeConnectionsGrid(nodes, CELL_SIZE, MAX_DIST);
