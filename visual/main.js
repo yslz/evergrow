@@ -1,10 +1,18 @@
+import { Node } from "../core/node.js";
+import { computeConnections } from "../core/network.js";
+import { onTick, startClock, getTick } from "../core/clock.js";
+import { drawNodes, drawEdges, drawTick } from "./renderer.js";
+import { computeConnectionsGrid } from "../core/grid.js";
+
 const canvas = document.getElementById("evergrow");
 const ctx = canvas.getContext("2d");
 
 let nodes = [];
+let edges = [];
 let lastWidth = window.innerWidth;
 let lastHeight = window.innerHeight;
 
+// --- resize ---
 function resizeCanvas() {
   const newWidth = window.innerWidth;
   const newHeight = window.innerHeight;
@@ -27,46 +35,36 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-let tick = 0;
-const TICK_INTERVAL = 1000; // 毫秒，先假设 1 秒一个块
-
+// --- init nodes ---
 for (let i = 0; i < 1000; i++) {
-  nodes.push({
-    id: i,                  //for future real node id
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    size: 2 + Math.random() * 1.5,
-    glow: Math.random() * 0.5,
-    alive: true             //for future real node status
-  });
+  nodes.push(
+    new Node(
+      i,
+      Math.random() * canvas.width,
+      Math.random() * canvas.height
+    )
+  );
 }
 
+// --- heartbeat reaction ---
+onTick((t) => {
+  nodes.forEach(n => n.update(t));
+  
+  if (t % 10 === 0) {
+    edges = computeConnectionsGrid(nodes, 100, 80);
+  }
+});
+
+// --- draw loop ---
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  nodes.forEach(n => {
-    ctx.beginPath();
-    ctx.fillStyle = `rgba(0, 200, 255, ${0.3 + n.glow})`;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = "cyan";
-    ctx.arc(n.x, n.y, n.size, 0, Math.PI * 2);
-    ctx.fill();
-  });
-
-  ctx.fillStyle = "white";
-  ctx.font = "16px monospace";
-  ctx.fillText(`tick: ${tick}`, 20, 30);
-
+  drawEdges(ctx, edges, 80);
+  drawNodes(ctx, nodes);
+  drawTick(ctx, getTick());
+  
   requestAnimationFrame(draw);
 }
 
-function heartbeat() {
-  tick += 1;
-  console.log("tick:", tick);
-  nodes.forEach(n => {
-    n.glow = 0.3 + 0.2 * Math.sin(tick * 0.5);
-  });
-}
-
 draw();
-setInterval(heartbeat, TICK_INTERVAL);
+startClock(1000);
