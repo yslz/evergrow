@@ -1,38 +1,35 @@
-// core/node.js
-
 export class Node {
   constructor(id, x, y) {
     this.id = id;
     this.x = x;
     this.y = y;
 
-    this.size = 2 + Math.random() * 1.5;
-    this.glow = Math.random() * 0.5;
-    this.alive = true;
+    // 状态
+    this.lifeState = "alive";
+    this.energy = Math.random();
+    this.load = 0;
+    this.decayTimer = 0;
 
-    this.neighbors = []; // 连接的其他节点
+    // 感知
+    this.neighbours = [];
 
-    // 未来：真实链节点信息
-    this.address = null;
-    this.latency = null;
-    this.stake = null;
+    // 视觉
+    this.size = 2 + this.energy * 2;
+    this.glow = this.energy;
   }
 
-  update(tick) {
-    // 心跳驱动的呼吸
-    this.glow = 0.3 + 0.2 * Math.sin(tick * 0.5);
+  update(t) {
+    // 呼吸
+    this.energy = 0.5 + 0.5 * Math.sin(t * 0.02 + this.id);
+    this.glow = this.energy;
 
-    // 未来：节点漂移、状态变化、网络拓扑更新
-  }
-
-  distanceTo(other) {
-    const dx = this.x - other.x;
-    const dy = this.y - other.y;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
-
-  // 未来：连接关系
-  connect(other) {
-    // 未来实现
+    // 状态衰退
+    this.decayTimer += 1;
+    if (this.decayTimer > 500 && this.lifeState === "alive") {
+      this.lifeState = "weak";
+    }
+    if (this.decayTimer > 1000 && this.lifeState === "weak") {
+      this.lifeState = "offline";
+    }
   }
 }
