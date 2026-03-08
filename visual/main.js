@@ -20,14 +20,11 @@ if (savedNodes) {
   if (!isNaN(v) && v > 0) NODE_COUNT = v;
 }
 
-
 const MAX_DIST = 80;      // 邻居感知范围
 const CELL_SIZE = 80;     // Grid 分区大小（>= MAX_DIST）
 
 const canvas = document.getElementById("evergrow");
 const ctx = canvas.getContext("2d");
-
-
 
 let nodes = [];
 let edges = [];
@@ -66,7 +63,6 @@ if (fpsInput) fpsInput.value = FPS;
 const nodeInput = document.getElementById("nodeCountInput");
 if (nodeInput) nodeInput.value = NODE_COUNT;
 
-
 const zones = [
   { x: 0, y: 0, w: canvas.width/2, h: canvas.height/2, energyBias: 0.2, birthRate: 0.01 },
   { x: canvas.width/2, y: 0, w: canvas.width/2, h: canvas.height/2, energyBias: -0.01, birthRate: 0.02 },
@@ -76,7 +72,6 @@ const zones = [
 
 // ⭐ 保存分区初始位置
 const baseZones = JSON.parse(JSON.stringify(zones));
-
 
 // --- init nodes ---
 for (let i = 0; i < NODE_COUNT; i++) {
@@ -110,7 +105,10 @@ onTick((t) => {
     }
 
     n.update(t)
+    n.energy *= 0.995;
 
+    n.x += (Math.random() - 0.5) * 0.2;
+    n.y += (Math.random() - 0.5) * 0.2;
    
   });
 
@@ -122,7 +120,13 @@ onTick((t) => {
   if (t % 10 === 0) {
     edges = computeConnectionsGrid(nodes, CELL_SIZE, MAX_DIST);
   }
-
+  
+  // ⭐ 每 5000 tick 触发一次生态噪声（随机扰动）
+  if (t % 5000 === 0) {
+    nodes.forEach(n => {
+      n.energy *= 0.8 + Math.random() * 0.4;  // 0.8 ~ 1.2
+    });
+  }
   // --- 出生机制 ---
   zones.forEach(zone => {
     if (Math.random() < zone.birthRate * 10) {
