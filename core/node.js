@@ -6,6 +6,9 @@ export class Node {
 
     this.baseX = this.x;
     this.baseY = this.y;
+    
+    this.dead = false;     // 是否死亡
+    this.age = 0;          // 用于寿命
 
     this.energy = Math.random();
     this.neighbours = [];
@@ -33,5 +36,17 @@ export class Node {
 
     this.x = this.baseX + Math.sin(this.id * 0.3 + t * driftSpeed) * driftRadius;
     this.y = this.baseY + Math.cos(this.id * 0.3 + t * driftSpeed) * driftRadius;
+
+    // --- 死亡条件 ---
+    // 1. 能量过低死亡
+    if (this.energy < 0.005) {
+      this.dead = true;
+    }   
+
+    // 2. 年龄过大死亡（可选）
+    this.age++;
+    if (this.age > 20000) {   // 大约 5 分钟寿命
+      this.dead = true;
+    }
   }
 }

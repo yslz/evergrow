@@ -2,11 +2,10 @@
   "name": "evergrow",
   "version": "1.0.0",
   "description": "A generative art project where 1000 autonomous nodes grow a path over blockchain time.",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
@@ -15,12 +14,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/yslz/evergrow/issues"
-  },
   "homepage": "https://github.com/yslz/evergrow#readme",
-  "dependencies": {
+  "type": "module",
+  "devDependencies": {
     "vite": "^7.3.1"
   }
 }
